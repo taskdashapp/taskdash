@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taskdash — local-first task dashboard for macOS</title>
+<meta name="description" content="A local-first task dashboard for macOS. Tasks, notes, todos, journal, habits, and a canvas in one private, offline app — no account, no cloud, nothing leaves your Mac.">
+<link rel="canonical" href="https://taskdashapp.github.io/taskdash/">
+<meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a0f" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Taskdash — your whole workday, on your Mac">
+<meta property="og:description" content="Tasks, notes, todos, journal, habits & canvas in one private, offline macOS app. No account, no cloud, nothing leaves your machine.">
+<meta property="og:url" content="https://taskdashapp.github.io/taskdash/">
+<meta property="og:site_name" content="Taskdash">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Taskdash — your whole workday, on your Mac">
+<meta name="twitter:description" content="A local-first task dashboard for macOS. No account, no cloud, nothing leaves your machine.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236d5efc'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#fbfbfd; --bg-2:#f1f1f6; --ink:#17171f; --ink-2:#42424f; --muted:#74748a;
+    --line:#e4e4ee; --accent:#6d5efc; --accent-ink:#5a49f0;
+    --card:#ffffff; --card-line:#e9e9f2;
+    --t-purple:#8b5cf6; --t-blue:#3b82f6; --t-green:#10b981;
+    --t-pink:#f472b6; --t-amber:#f59e0b; --t-orange:#f97316;
+    --term-bg:#0e0e16; --term-ink:#e7e7f2; --term-dim:#8a8aa2; --term-green:#5ce38b;
+    --radius:16px;
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"Menlo","JetBrains Mono","Cascadia Code",monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0a0a0f; --bg-2:#101019; --ink:#ececf4; --ink-2:#c2c2d2; --muted:#8686a0;
+      --line:#20202e; --accent:#8b7dff; --accent-ink:#a99dff;
+      --card:#12121c; --card-line:#22222f;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#fbfbfd; --bg-2:#f1f1f6; --ink:#17171f; --ink-2:#42424f; --muted:#74748a;
+    --line:#e4e4ee; --accent:#6d5efc; --accent-ink:#5a49f0; --card:#ffffff; --card-line:#e9e9f2;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0a0a0f; --bg-2:#101019; --ink:#ececf4; --ink-2:#c2c2d2; --muted:#8686a0;
+    --line:#20202e; --accent:#8b7dff; --accent-ink:#a99dff; --card:#12121c; --card-line:#22222f;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  a{color:inherit}
+  code{font-family:var(--mono);font-size:.92em}
+  ::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
+
+  .top{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;max-width:1000px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:650;letter-spacing:-.01em;font-size:17px}
+  .logo{width:26px;height:26px;border-radius:8px;background:
+    conic-gradient(from 210deg,var(--t-purple),var(--t-blue),var(--t-green),var(--t-amber),var(--t-orange),var(--t-pink),var(--t-purple));
+    box-shadow:0 1px 0 rgba(255,255,255,.25) inset, 0 4px 14px color-mix(in srgb,var(--accent) 35%,transparent)}
+  .top a.ghlink{font-family:var(--mono);font-size:13px;color:var(--muted);text-decoration:none;border:1px solid var(--line);
+    padding:7px 13px;border-radius:999px;transition:.2s}
+  .top a.ghlink:hover{color:var(--ink);border-color:var(--accent)}
+
+  .hero{padding:52px 0 40px;text-align:center}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ink);
+    display:inline-flex;gap:9px;align-items:center}
+  .eyebrow::before,.eyebrow::after{content:"";width:22px;height:1px;background:color-mix(in srgb,var(--accent) 45%,transparent)}
+  h1{font-size:clamp(34px,6vw,60px);line-height:1.04;letter-spacing:-.03em;font-weight:700;margin:20px auto 0;
+    text-wrap:balance;max-width:16ch}
+  h1 .grad{background:linear-gradient(105deg,var(--t-blue),var(--accent) 45%,var(--t-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:clamp(17px,2.3vw,20px);color:var(--ink-2);max-width:52ch;margin:20px auto 0;text-wrap:pretty}
+
+  .term{max-width:660px;margin:34px auto 0;text-align:left;border-radius:14px;overflow:hidden;
+    background:var(--term-bg);border:1px solid #23233a;
+    box-shadow:0 26px 60px -22px rgba(20,16,60,.55), 0 6px 18px -8px rgba(0,0,0,.5);
+    opacity:0;transform:translateY(14px) scale(.99);animation:rise .7s .1s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .term-bar{display:flex;align-items:center;gap:8px;padding:12px 15px;background:#15151f;border-bottom:1px solid #23233a}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+  .term-title{margin-left:8px;font-family:var(--mono);font-size:12px;color:var(--term-dim)}
+  .term-body{padding:18px 18px 20px;font-family:var(--mono);font-size:13.5px;line-height:1.85;color:var(--term-ink)}
+  .cmd-row{display:flex;align-items:flex-start;gap:10px}
+  .prompt{color:var(--term-green);user-select:none}
+  .cmd{flex:1;color:#fff;word-break:break-all}
+  .copy{flex:none;font-family:var(--mono);font-size:11.5px;color:var(--term-dim);background:#20202e;border:1px solid #30304a;
+    border-radius:7px;padding:5px 10px;cursor:pointer;transition:.15s;letter-spacing:.03em}
+  .copy:hover{color:#fff;border-color:var(--accent)}
+  .copy.done{color:var(--term-green);border-color:var(--term-green)}
+  .out{color:var(--term-dim);white-space:pre-wrap;margin-top:8px}
+  .out .ok{color:var(--term-green)}
+  .out .bar{color:#4a4a66}
+
+  .howto{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:16px auto 0;max-width:560px}
+  .howto b{color:var(--ink-2);font-weight:600}
+  .subnote{font-size:13px;color:var(--muted);margin:22px auto 0;max-width:52ch}
+  .arch{display:inline-flex;gap:7px;align-items:center;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .arch span{border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+
+  section.band{padding:64px 0;border-top:1px solid var(--line)}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  h2{font-size:clamp(24px,3.4vw,34px);letter-spacing:-.02em;font-weight:680;margin:12px 0 0;text-wrap:balance;max-width:20ch}
+  .say{color:var(--ink-2);max-width:56ch;margin:14px 0 0;font-size:16.5px}
+
+  .tools{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px}
+  @media (max-width:640px){.tools{grid-template-columns:1fr 1fr}}
+  .tool{background:var(--card);border:1px solid var(--card-line);border-radius:var(--radius);padding:20px 18px;
+    display:flex;flex-direction:column;gap:9px;transition:.2s}
+  .tool:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--tc) 50%,var(--card-line));
+    box-shadow:0 16px 30px -18px color-mix(in srgb,var(--tc) 60%,transparent)}
+  .tool .ti{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+    background:color-mix(in srgb,var(--tc) 15%,transparent);color:var(--tc);font-size:17px}
+  .tool h3{margin:2px 0 0;font-size:16px;font-weight:640;letter-spacing:-.01em}
+  .tool p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.5}
+
+  .priv{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+  @media (max-width:720px){.priv{grid-template-columns:1fr;gap:28px}}
+  .diagram{background:var(--card);border:1px solid var(--card-line);border-radius:var(--radius);padding:26px;
+    display:flex;align-items:center;justify-content:center;gap:18px;min-height:150px}
+  .node{display:flex;flex-direction:column;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+  .node .box{width:64px;height:64px;border-radius:14px;display:grid;place-items:center;font-size:26px;
+    background:color-mix(in srgb,var(--accent) 14%,transparent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+  .node.cloud .box{background:color-mix(in srgb,#ff5f57 12%,transparent);border-color:color-mix(in srgb,#ff5f57 30%,transparent);
+    position:relative;color:var(--muted)}
+  .node.cloud .box::after{content:"";position:absolute;inset:0;background:
+    linear-gradient(135deg,transparent 44%,#ff5f57 46%,#ff5f57 54%,transparent 56%)}
+  .node.cloud span{color:var(--muted);text-decoration:line-through}
+  .link{font-family:var(--mono);color:var(--muted);font-size:20px}
+  .facts{display:flex;flex-direction:column;gap:16px;margin-top:26px}
+  .fact{display:flex;gap:13px;align-items:flex-start}
+  .fact .fi{flex:none;width:24px;height:24px;border-radius:7px;background:color-mix(in srgb,var(--accent) 16%,transparent);
+    color:var(--accent-ink);display:grid;place-items:center;font-size:13px;margin-top:2px}
+  .fact b{font-weight:620;letter-spacing:-.01em}
+  .fact p{margin:2px 0 0;color:var(--muted);font-size:14px;line-height:1.5}
+
+  .os{background:var(--card);border:1px solid var(--card-line);border-radius:var(--radius);padding:30px;margin-top:30px;
+    display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+  @media (max-width:640px){.os{grid-template-columns:1fr;gap:16px}}
+  .os .glyph{font-family:var(--mono);font-size:13px;color:var(--term-green);background:var(--term-bg);border:1px solid #23233a;
+    border-radius:12px;padding:16px 18px;white-space:pre;line-height:1.7}
+
+  footer{border-top:1px solid var(--line);padding:40px 0 60px;margin-top:8px}
+  .foot{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}
+  .foot .lic{font-size:13px;color:var(--muted);max-width:60ch;line-height:1.55}
+  .foot a{color:var(--accent-ink);text-decoration:none}
+  .foot a:hover{text-decoration:underline}
+
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;
+    background:var(--ink);color:var(--bg);font-size:13.5px;font-weight:550;padding:10px 18px;border-radius:999px;
+    pointer-events:none;transition:.25s;z-index:50;font-family:var(--mono)}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="logo" aria-hidden="true"></span> Taskdash</div>
+  <a class="ghlink" href="https://github.com/taskdashapp/taskdash" target="_blank" rel="noopener">github ↗</a>
+</header>
+
+<main>
+  <section class="wrap hero">
+    <span class="eyebrow">Local-first · macOS</span>
+    <h1>Your whole workday, <span class="grad">on your Mac</span>. Nowhere else.</h1>
+    <p class="lede">Tasks, notes, todos, journal, habits, and a canvas — one quiet dashboard. No account, no cloud, no data leaving your machine.</p>
+
+    <div class="term" role="group" aria-label="Install command and output">
+      <div class="term-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="term-title">— zsh — Taskdash install</span>
+      </div>
+      <div class="term-body">
+        <div class="cmd-row">
+          <span class="prompt">$</span>
+          <span class="cmd" id="cmd">curl -fsSL https://github.com/taskdashapp/taskdash/releases/latest/download/install.sh | bash</span>
+          <button class="copy" id="copy" aria-label="Copy install command">copy</button>
+        </div>
+        <div class="out"><span class="bar">📦 Installing…</span>
+  Taskdash 0.0.10 (arm64)
+  downloading…
+<span class="bar">  ████████████████████████████████████  100%</span>
+  checksum ok
+
+<span class="ok">✓ Taskdash installed to Applications and launched.</span></div>
+      </div>
+    </div>
+
+    <p class="howto"><b>New to the terminal?</b> Press <b>⌘ Space</b>, type <b>Terminal</b>, hit <b>Return</b> — then paste the line above and press <b>Return</b> again.</p>
+    <div class="arch"><span>Apple Silicon</span><span>Intel</span><span>macOS</span></div>
+    <p class="subnote">Taskdash is distributed unsigned, so the installer clears macOS quarantine for you and installs at the user level — that's why it's one command instead of a drag-and-drop <code>.dmg</code>. It updates itself from then on.</p>
+  </section>
+
+  <section class="band"><div class="wrap">
+    <span class="kicker">One window</span>
+    <h2>Six tools that usually mean six apps.</h2>
+    <p class="say">Everything lives in the same place and links to everything else — a task carries its notes, its checklist, and its sketches. Minimal buttons, low friction, built to actually be used every day.</p>
+    <div class="tools">
+      <div class="tool" style="--tc:var(--t-blue)"><span class="ti">◔</span><h3>Tasks</h3><p>Stages, subtasks, a pipeline that promotes work when it's ready.</p></div>
+      <div class="tool" style="--tc:var(--t-green)"><span class="ti">✓</span><h3>Todos</h3><p>Quick lists and temporary tabs that group around a task, then expire.</p></div>
+      <div class="tool" style="--tc:var(--t-pink)"><span class="ti">✎</span><h3>Notes</h3><p>Folders and a Markdown editor with live formatting, linked to your work.</p></div>
+      <div class="tool" style="--tc:var(--t-purple)"><span class="ti">◆</span><h3>Journal</h3><p>Daily entries, a mood heatmap, and a habit tracker beside them.</p></div>
+      <div class="tool" style="--tc:var(--t-amber)"><span class="ti">◷</span><h3>Reminders</h3><p>Native notifications that fire on time and sync across your tabs.</p></div>
+      <div class="tool" style="--tc:var(--t-orange)"><span class="ti">✦</span><h3>Canvas</h3><p>An Excalidraw whiteboard for anything that's easier drawn than typed.</p></div>
+    </div>
+  </div></section>
+
+  <section class="band"><div class="wrap">
+    <span class="kicker">Private by architecture</span>
+    <div class="priv">
+      <div>
+        <h2>Nothing leaves your machine.</h2>
+        <p class="say">Taskdash runs a small server on <code>127.0.0.1</code> — your own computer. There is no remote backend to send your data to, because there isn't one at all.</p>
+        <div class="facts">
+          <div class="fact"><span class="fi">↓</span><div><b>No account, no sign-up</b><p>Open it and start. Nothing to create, nothing to log into.</p></div></div>
+          <div class="fact"><span class="fi">⌂</span><div><b>Your files stay yours</b><p>Data is stored on your disk, versioned per change — you can read it directly.</p></div></div>
+          <div class="fact"><span class="fi">↻</span><div><b>Updates itself, quietly</b><p>Checks for new versions, verifies them, swaps in place, relaunches.</p></div></div>
+        </div>
+      </div>
+      <div class="diagram" aria-hidden="true">
+        <div class="node"><span class="box">🖥️</span><span>your Mac</span></div>
+        <div class="link">⇢</div>
+        <div class="node cloud"><span class="box">☁</span><span>the cloud</span></div>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="band"><div class="wrap">
+    <span class="kicker">Under the hood</span>
+    <h2>An agent OS, not just a dashboard.</h2>
+    <p class="say">Every feature is a node at a path, driven by the same actions, events, and state that the interface uses — so a script or an AI agent can operate Taskdash exactly the way you do.</p>
+    <div class="os">
+      <div class="glyph">/Tasks
+/Notes
+/Journal
+/Kernel/…</div>
+      <div>
+        <b style="font-weight:620;letter-spacing:-.01em">Paths · Actions · Events · State · Plugins</b>
+        <p style="margin:8px 0 0;color:var(--muted);font-size:14.5px;line-height:1.55">A file-system-shaped kernel with permissions, rate limits, a process table, and a plugin registry. The dashboard is one client of it — agents are another.</p>
+      </div>
+    </div>
+  </div></section>
+</main>
+
+<footer><div class="wrap foot">
+  <p class="lic"><strong style="color:var(--ink-2)">Business Source License 1.1</strong> — free for personal, educational, and evaluation use; commercial use requires a license. Converts to Apache 2.0 on 2030-04-13.</p>
+  <a href="https://github.com/taskdashapp/taskdash" target="_blank" rel="noopener">github.com/taskdashapp/taskdash ↗</a>
+</div></footer>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script>
+  (function(){
+    var cmd = document.getElementById('cmd').textContent.trim();
+    var btn = document.getElementById('copy');
+    var toast = document.getElementById('toast');
+    var t;
+    function flash(){
+      btn.textContent='copied'; btn.classList.add('done');
+      toast.classList.add('show');
+      clearTimeout(t);
+      t=setTimeout(function(){ btn.textContent='copy'; btn.classList.remove('done'); toast.classList.remove('show'); },1600);
+    }
+    btn.addEventListener('click',function(){
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(cmd).then(flash,flash);
+      }else{
+        var r=document.createRange();r.selectNode(document.getElementById('cmd'));
+        var s=getSelection();s.removeAllRanges();s.addRange(r);
+        try{document.execCommand('copy')}catch(e){} s.removeAllRanges(); flash();
+      }
+    });
+  })();
+</script>
+</body>
+</html>
