@@ -1,6 +1,6 @@
 # Taskdash
 
-A local-first task dashboard + agent OS. Runs entirely on your machine — your data never leaves your computer.
+A local-first task dashboard. Runs entirely on your machine — your data never leaves your computer.
 
 ## Install (macOS)
 
@@ -20,8 +20,6 @@ Taskdash checks for updates on its own and installs them automatically.
 ## What it is
 
 - Tasks, todos, notes, journal, habits, canvas — one dashboard, minimal buttons.
-- Local-first — a small server runs on 127.0.0.1; nothing is sent to any remote server.
-- Agent OS — a scriptable kernel (paths, actions, events, state, plugins).
 
 ## License
 
