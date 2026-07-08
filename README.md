@@ -21,7 +21,3 @@ Taskdash checks for updates on its own and installs them automatically.
 
 - Tasks, todos, notes, journal, habits, canvas — one dashboard, minimal buttons.
 
-## License
-
-Business Source License 1.1 — free for personal, educational, and evaluation use;
-commercial use requires a license. Converts to Apache 2.0 on 2030-04-13. See LICENSE.
