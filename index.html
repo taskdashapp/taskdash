@@ -34,7 +34,7 @@
 <script type="application/ld+json">
 {
   "@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-    {"@type":"Question","name":"Is Taskdash free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Taskdash is free for personal, educational, and evaluation use under the Business Source License 1.1. Commercial use requires a license."}},
+    {"@type":"Question","name":"Is Taskdash free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Taskdash is free to download and use on macOS — no purchase and no subscription."}},
     {"@type":"Question","name":"Does my data leave my Mac?","acceptedAnswer":{"@type":"Answer","text":"No. Taskdash runs a small local server on 127.0.0.1 and stores everything on your own disk. There is no cloud backend and no account."}},
     {"@type":"Question","name":"Does Taskdash work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. Because everything runs locally, Taskdash works fully offline. An internet connection is only used to check for app updates."}},
     {"@type":"Question","name":"Which Macs are supported?","acceptedAnswer":{"@type":"Answer","text":"Taskdash runs on macOS 11 and later, on both Apple Silicon (M-series) and Intel Macs."}}
@@ -259,7 +259,7 @@
     <span class="kicker">Questions</span>
     <h2>Good to know.</h2>
     <div class="faq">
-      <div class="qa"><h3>Is Taskdash free?</h3><p>Yes — free for personal, educational, and evaluation use under the Business Source License 1.1. Commercial use requires a license, and the whole thing converts to Apache 2.0 in 2030.</p></div>
+      <div class="qa"><h3>Is Taskdash free?</h3><p>Yes — free to download and use on your Mac. Nothing to buy, no subscription, no account.</p></div>
       <div class="qa"><h3>Does my data leave my Mac?</h3><p>No. Taskdash runs a small local server on <code>127.0.0.1</code> and stores everything on your own disk. There's no cloud backend and no account — nothing to send anywhere.</p></div>
       <div class="qa"><h3>Does it work offline?</h3><p>Completely. Everything runs locally, so Taskdash works with no internet at all. A connection is only used to check for app updates.</p></div>
       <div class="qa"><h3>Why is it a terminal command instead of a normal download?</h3><p>Taskdash isn't Apple-code-signed yet, so a double-clicked <code>.dmg</code> would be blocked by macOS Gatekeeper. The one-line installer clears that for you and sets up automatic updates. Signing is on the roadmap.</p></div>
@@ -269,7 +269,7 @@
 </main>
 
 <footer><div class="wrap foot">
-  <p class="lic"><strong style="color:var(--ink-2)">Business Source License 1.1</strong> — free for personal, educational, and evaluation use; commercial use requires a license. Converts to Apache 2.0 on 2030-04-13.</p>
+  <p class="lic"><strong style="color:var(--ink-2)">Taskdash</strong> — a local-first Mac app. Your data stays on your machine.</p>
   <a href="https://github.com/taskdashapp/taskdash" target="_blank" rel="noopener">github.com/taskdashapp/taskdash ↗</a>
 </div></footer>
 
@@ -288,8 +288,11 @@
     fetch('https://api.github.com/repos/taskdashapp/taskdash/releases')
       .then(function(r){return r.ok?r.json():[];})
       .then(function(rels){
+        // Count only the real app payload (.dmg/.zip) — you can't get those
+        // without actually running the installer, so bots hitting install.sh
+        // can't inflate it.
         var n=0;(rels||[]).forEach(function(rel){(rel.assets||[]).forEach(function(a){
-          if(/\.(dmg|zip)$|install\.sh$/.test(a.name)) n+=a.download_count||0;});});
+          if(/\.(dmg|zip)$/.test(a.name)) n+=a.download_count||0;});});
         var word=n.toLocaleString()+' download'+(n===1?'':'s');
         var top=document.getElementById('dlcount-top');
         if(top) top.textContent = n>0 ? (word+' and counting') : 'New — be an early user';
