@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://taskdashapp.github.io/taskdash/sitemap.xml
